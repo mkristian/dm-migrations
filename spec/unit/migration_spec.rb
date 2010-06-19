@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'Migration' do
   supported_by :postgres, :mysql, :sqlite do
     before do
-      @adapter = mock('adapter', :class => DataMapper::Spec.adapter.class)
+      @adapter = mock('adapter', :dialect => DataMapper::Spec.adapter.dialect)
       @repo = mock('DataMapper.repository', :adapter => @adapter)
       DataMapper.stub!(:repository).and_return(@repo)
       @m = DataMapper::Migration.new(1, :do_nothing, {}) {}
@@ -40,7 +40,7 @@ describe 'Migration' do
       end
 
       it 'should determine the class of the adapter to be extended' do
-        @adapter.should_receive(:class).and_return(DataMapper::Spec.adapter.class)
+        @adapter.should_receive(:dialect).and_return(DataMapper::Spec.adapter.dialect)
         DataMapper::Migration.new(1, :do_nothing, {}) {}
       end
 
@@ -49,8 +49,17 @@ describe 'Migration' do
         DataMapper::Migration.new(1, :do_nothing, {}) {}
       end
 
+      it 'should raise "Unsupported adapter" on an unknown dialect' do
+        @adapter.should_receive(:dialect).any_number_of_times.and_return("Invalid")
+        @adapter.should_receive(:class).and_return("InvalidAdapter")
+        lambda {
+          DataMapper::Migration.new(1, :do_nothing, {}) {}
+        }.should raise_error
+      end
+
       it 'should raise "Unsupported adapter" on an unknown adapter' do
-        @adapter.should_receive(:class).any_number_of_times.and_return("InvalidAdapter")
+        @adapter.should_receive(:respond_to?).and_return(false)
+        @adapter.should_receive(:class).and_return("InvalidAdapter")
         lambda {
           DataMapper::Migration.new(1, :do_nothing, {}) {}
         }.should raise_error

@@ -5,6 +5,10 @@ module DataMapper
 
     module DataObjectsAdapter
 
+      def dialect
+        self.class.to_s.sub(/.*::/, '').sub(/Adapter$/,'')
+      end
+
       # Returns whether the storage_name exists.
       #
       # @param [String] storage_name

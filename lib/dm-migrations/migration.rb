@@ -21,10 +21,12 @@ module DataMapper
       @database = DataMapper.repository(@options[:database] || :default)
       @adapter = @database.adapter
 
-      case @adapter.class.to_s
-      when /Sqlite/   then @adapter.extend(SQL::Sqlite)
-      when /Mysql/    then @adapter.extend(SQL::Mysql)
-      when /Postgres/ then @adapter.extend(SQL::Postgres)
+      if @adapter.respond_to?(:dialect)
+        begin
+          @adapter.extend(SQL.const_get("#{@adapter.dialect}"))
+        rescue NameError
+          raise "Unsupported Migration Adapter #{@adapter.class} with SQL dialect #{@adapter.dialect}"
+        end
       else
         raise "Unsupported Migration Adapter #{@adapter.class}"
       end
