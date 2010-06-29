@@ -1,3 +1,24 @@
-= dm-migrations
+= dm-hibernate-migrations
 
 DataMapper plugin for writing and specing migrations.
+
+This plugin is drop in replacement for dm-hibernate and allows to switch from dm-hibernate-adapter
+to any dm-XYZ-adapter based on dm-do-adapter just via the database configuration.
+
+== running specs
+
+per default specs do not run since you have to have an environment variable 'ADAPTER' set. this API is enforced 
+even by dm-core library which makes it kind of difficult (or too much work to get around this).
+
+run the specs like this
+$ ADAPTER=sqlite mvn rspec:test 
+
+to run specs against dm-hibernate-adapter is not implemented yet.
+
+== build the gem
+
+use dm-hibernate-migrations.gemspec or
+
+$ mvn install
+
+and you will find the gem in target (needs maven3)

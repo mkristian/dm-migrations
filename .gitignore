@@ -34,3 +34,6 @@ Gemfile.lock
 
 ## PROJECT::SPECIFIC
 spec/db/
+
+## MAVEN
+target
