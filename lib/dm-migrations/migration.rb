@@ -21,9 +21,12 @@ module DataMapper
       @database = DataMapper.repository(@options[:database] || :default)
       @adapter = @database.adapter
 
+      is_do_adapter = @adapter.is_a? ::DataMapper::Adapters::DataObjectsAdapter
+      require "dm-migrations/adapters/dm-do-adapter" if is_do_adapter
       if @adapter.respond_to?(:dialect)
         begin
           @adapter.extend(SQL.const_get("#{@adapter.dialect}"))
+          require "dm-migrations/adapters/dm-#{@adapter.dialect.downcase}-adapter" if is_do_adapter
         rescue NameError
           raise "Unsupported Migration Adapter #{@adapter.class} with SQL dialect #{@adapter.dialect}"
         end
